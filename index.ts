@@ -1,6 +1,16 @@
-import fs, { Stats } from 'fs';
+/*****************************
+ * 
+ *        Ugly code
+ *        Dont look!
+ * 
+ ****************************/
+import fs from 'fs';
 import path from 'path';
-import readline from 'readline';
+import readlineSync from 'readline-sync';
+
+process.on('exit', function (code) {
+  return console.log(`Process to exit with code ${code}\nCompleted!!!`);
+});
 
 class Args {
   public initialArgs: string[] = process.argv.slice(2);
@@ -9,6 +19,7 @@ class Args {
   public componentDir = '';
   public styleExtension = 'css';
   public jsExtension = '.js';
+  public changeIfExists = false;
 
   constructor() {
     this.init();
@@ -42,6 +53,10 @@ class Args {
 
   private resolveArgs(arg: string) {
     switch (arg) {
+      case '-y':
+        this.changeIfExists = true;
+        break;
+
       case '-scss':
         this.styleExtension = 'scss';
         break;
@@ -71,60 +86,82 @@ class Args {
 class FolderCreator {
   private args = new Args();
   private dirPath: string = `${this.args.componentDir}/${this.args.componentName}`;
-  private readable = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
+  private cssName: string = `${this.args.componentName}.module.${this.args.styleExtension}`;
+  private jsName: string = `${this.args.componentName}.${this.args.jsExtension}`;
 
   constructor() {
+    this.init();
+  }
+
+  private async init() {
     this.createDirectory();
-    this.createFiles();
-  }
-
-  private async createFiles() {
-    // fs.appendFileSync;
+    await this.createJs();
     await this.createCss();
-    const jsPath = `${this.dirPath}/${this.args.componentName}${this.args.jsExtension}`;
-  }
-
-  private async createCss() {
-    const cssPath = `${this.dirPath}/${this.args.componentName}.module.${this.args.styleExtension}`;
-
-    for (let extension of ['css', 'scss', 'less', 'sass']) {
-      const fileNameToCheck = `${this.args.componentName}.module.${extension}`;
-
-      const pethToCheck = `${this.dirPath}/${fileNameToCheck}`;
-      if (fs.existsSync(pethToCheck)) {
-        if (
-          !(await this.shouldChangeFile(
-            `style file ${fileNameToCheck} already exists, create new? [Y/n]`
-          ))
-        ) {
-          console.log('skiped creation');
-        }
-      }
-    }
-  }
-
-  private async shouldChangeFile(info: string) {
-    const answer: string = await new Promise((resolve) => {
-      this.readable.question(info, resolve);
-    });
-
-    return answer.toLowerCase() === 'y';
+    console.log('Completed!');
   }
 
   private createDirectory() {
-    fs.mkdirSync(this.dirPath, {
-      recursive: true,
+    if (!fs.existsSync(this.dirPath)) {
+      fs.mkdirSync(this.dirPath, { recursive: true });
+    }
+  }
+
+  private async createFile(filePath: string, data: string) {
+    fs.writeFile(filePath, data, { flag: 'wx' }, async (err) => {
+      if (err) {
+        if (
+          !stdinShouldComplete(
+            `${filePath} already exist. Should rewrite? [y/n]`
+          )
+        ) {
+          return;
+        } else {
+          fs.unlinkSync(filePath);
+          await this.createFile(filePath, data);
+        }
+      } else {
+        console.log(`${filePath} created`);
+      }
+      return;
     });
+  }
+
+  private async createJs() {
+    const filePath = `${this.dirPath}/${this.jsName}`;
+    const data = `import React from 'react';
+  
+import style from '${this.cssName}';
+    
+const ${this.args.componentName} = () => {
+  return (
+    <div>
+        ${this.args.componentName}
+    </div>
+  );
+};
+
+export default ${this.args.componentName};
+    `;
+
+    await this.createFile(filePath, data);
+  }
+
+  private async createCss() {
+    await this.createFile(
+      `${this.dirPath}/${this.cssName}`,
+      '.container {\n\n}'
+    );
   }
 }
 
+const stdinShouldComplete = (text: string) => {
+  let result: string = readlineSync.question(`${text}\n`);
+
+  return result.toLowerCase() === 'y';
+};
+
 const f = new FolderCreator();
 
-// dont trust
-// https://stackoverflow.com/questions/23044429/block-for-stdin-in-node-js
 
 // todo
 
