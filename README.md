@@ -67,3 +67,7 @@ There are some scripts with for development with predefined args.
 - [ ] It will make components if thay already exist but with other extension.
 - [ ] tests
 - [ ] linter
+- [ ] path.isAbsolute(process.argv.slice(2)[0])
+- [ ] should throw error if absolute
+- [ ] more info about stdin (file name)
+- [ ] if dont have argument programm should throw
