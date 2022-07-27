@@ -160,8 +160,7 @@ const stdinShouldComplete = (text: string) => {
   return result.toLowerCase() === 'y';
 };
 
-const f = new FolderCreator();
-
+export default FolderCreator;
 
 // todo
 
