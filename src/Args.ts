@@ -6,7 +6,7 @@ class Args {
   public componentName = '';
   public componentDir = '';
   public styleExtension = 'css';
-  public jsExtension = '.js';
+  public jsExtension = 'js';
   public changeIfExists = false;
 
   constructor() {
@@ -35,7 +35,7 @@ class Args {
     if (dir) {
       this.componentDir = dir;
     } else {
-      this.componentDir = './src/componets';
+      this.componentDir = './src/components';
     }
   }
 
