@@ -34,6 +34,7 @@
     "typescript": "^4.7.4"
   },
   "bin": {
-    "rsmc": "bin/index.ts"
-  }
+    "rsmc": "./bin/index.js"
+  },
+  "preferGlobal": true
 }

@@ -4,4 +4,6 @@
  *        Dont look!
  *
  ****************************/
-export {};
+import Creator from "./Creator";
+declare const _default: Creator;
+export default _default;
