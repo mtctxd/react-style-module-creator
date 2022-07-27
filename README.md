@@ -57,7 +57,7 @@ Ugly code. Dont watch.
 npm install
 ```
 
-There are some scripts with for development with predefined args.
+~~There are some scripts with for development with predefined args.~~
 
 # Todo
 
