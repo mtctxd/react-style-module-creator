@@ -54,7 +54,7 @@ export default class Creator {
     const filePath = `${this.dirPath}/${this.jsName}`;
     const data = `import React from 'react';
     
-import style from '${this.cssName}';
+import style from './${this.cssName}';
     
 const ${this.args.componentName} = () => {
 return (
